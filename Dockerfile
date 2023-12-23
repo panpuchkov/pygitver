@@ -10,8 +10,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Install pip requirements
 COPY ./requirements.txt /pygitver/requirements.txt
-RUN pip install -U pip  \
-    && pip install -r /pygitver/requirements.txt --no-cache-dir
+RUN pip install --no-cache-dir -U pip  \
+    && pip install --no-cache-dir -r /pygitver/requirements.txt
 
 FROM python:3.12-alpine
 

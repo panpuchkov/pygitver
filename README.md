@@ -1,4 +1,4 @@
-# Semver-Helper
+# pygitver
 
 Features:
 * Conventional Commit linter
@@ -48,7 +48,7 @@ feat(lang): add Polish language
 ## Users (Developers) Section
 
 
-### Install Semver-Helper
+### Install pygitver
 Run in the `git` root folder of the target repository on localhost. 
 ```shell
 docker run --rm -v $(pwd):/app -w /app --entrypoint '' panpuchkov/pygitver /pygitver/scripts/install.sh
@@ -57,7 +57,7 @@ docker run --rm -v $(pwd):/app -w /app --entrypoint '' panpuchkov/pygitver /pygi
 * It doesn't matter what the current branch is.
 * You should install it in every repository that needs conventional commit messages.
 
-### Update Semver-Helper
+### Update pygitver
 
 Run in terminal in any folder:
 
