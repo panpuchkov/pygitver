@@ -1,4 +1,4 @@
-name: Docker Build Image & Push (CICDv2)
+name: Docker Build & Push
 permissions: write-all
 'on':
   push:
@@ -41,7 +41,7 @@ jobs:
         shell: bash
         run: |
           set -x
-          docker build -t ${{ env.IMAGE_NAME }} .
+          docker build -t "panpuchkov/${{ env.IMAGE_NAME }}" .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -53,4 +53,5 @@ jobs:
         shell: bash
         run: |
           set -x
-          echo "TODO"
+          IMAGE_NAME_WITH_VERSION="panpuchkov/${{ env.IMAGE_NAME }}:latest"
+          docker push "${IMAGE_NAME_WITH_VERSION}"
