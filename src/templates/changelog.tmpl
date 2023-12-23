@@ -1,0 +1,56 @@
+##########
+Change Log
+##########
+
+Version {{ version }}
+=============
+
+{% if date %}:Released: {{ date }}{% endif %}
+{% if maintainer %}:Maintainer: {{ maintainer }}{% endif %}
+
+{% if features %}
+Features
+--------
+
+{% for item in features %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}
+
+
+{% if bugfixes %}
+Bug Fixes
+---------
+
+{% for item in bugfixes %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}
+
+
+{% if deprecations %}
+Deprecations
+------------
+
+{% for item in deprecations %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}
+
+{% if docs %}
+Improved Documentation
+----------------------
+
+{% for item in docs %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}
+
+{% if others %}
+Trivial/Internal Changes
+------------------------
+
+{% for item in others %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}

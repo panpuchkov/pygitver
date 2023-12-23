@@ -1,0 +1,29 @@
+{
+  "version": "1.2.0",
+  "bump_rules": {
+    "major": false,
+    "minor": true,
+    "patch": true
+  },
+  "changelog": {
+    "features": [
+      "feat(api): new api 1.1",
+      "feat(api): update api 1.2"
+    ],
+    "bugfixes": [
+      "fix: test fix 1"
+    ],
+    "deprecations": [
+      "feat(api): deprecated 1"
+    ],
+    "others": [
+      "refactor: code refactoring 1"
+    ],
+    "docs": [
+      "docs: update doc 1"
+    ],
+    "non_conventional_commit": [
+      "some non-conventional commit 1"
+    ]
+  }
+}

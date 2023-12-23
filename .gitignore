@@ -1,0 +1,5 @@
+.idea
+.tox
+.coverage
+*/__pychache__/*
+venv

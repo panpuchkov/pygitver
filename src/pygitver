@@ -1,0 +1,7 @@
+#/bin/sh
+
+# removes issue with git dubious ownership in a docker container
+git config --global --add safe.directory $(pwd)
+
+# run pygitver with parameters
+python /pygitver/pygitver.py $@

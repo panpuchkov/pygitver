@@ -1,0 +1,59 @@
+# Change Log
+
+## Version: {{ version }}
+
+{% if date %}:Released: {{ date }}{% endif %}
+{% if maintainer %}:Maintainer: {{ maintainer }}{% endif %}
+
+
+## Services
+
+{% for key, value in services.items() %}
+
+### {{ key | capitalize }}
+
+Version: {{ value.version }}
+
+{% if value.changelog.features %}
+#### Features
+
+{% for item in value.changelog.features %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}
+
+
+{% if value.changelog.bugfixes %}
+#### Bug Fixes
+
+{% for item in value.changelog.bugfixes %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}
+
+
+{% if value.changelog.deprecations %}
+#### Deprecations
+
+{% for item in value.changelog.deprecations %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}
+
+{% if value.changelog.docs %}
+#### Improved Documentation
+
+{% for item in value.changelog.docs %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}
+
+{% if value.changelog.others %}
+#### Trivial/Internal Changes
+
+{% for item in value.changelog.others %}
+* {{ item | capitalize }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}

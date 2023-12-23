@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# pygitver - commit-msg git hook
+COMMIT_MSG=$1
+COMMIT_LINT_DOCKER="panpuchkov/pygitver"
+docker run --rm -v $(pwd):/app -w /app ${COMMIT_LINT_DOCKER} --check-commit-message "$(cat \"${COMMIT_MSG}\")"
+
+COMMIT_LINT_CHECK="$?"
+if [[ 0 -ne "${COMMIT_LINT_CHECK}" ]]; then
+  exit ${COMMIT_LINT_CHECK};
+fi
+
+# update docker image in background (optional, uncomment next line if you want auto update)
+# docker pull ${COMMIT_LINT_DOCKER} >> /dev/null &
+
+# pygitver - commit-msg git hook ^^^

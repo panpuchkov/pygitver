@@ -1,0 +1,7 @@
+Jinja2
+
+tox
+pytest
+black
+mypy
+docformatter
