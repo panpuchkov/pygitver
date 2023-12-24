@@ -5,6 +5,86 @@ Features:
 * Generate CHANGELOG
 * Bump version based on CHANGELOG
 
+# Examples
+
+```shell
+$ git tag -l
+v0.0.1
+v0.0.2
+$ docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/pygitver --curr-ver
+v0.0.2
+$ docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/pygitver --next-ver
+v0.0.3
+$ docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/pygitver changelog
+##########
+Change Log
+##########
+
+Version v0.0.3
+=============
+
+Features
+--------
+
+* Allow to trigger job manually
+
+Bug Fixes
+---------
+
+* Path for the default changelog template
+
+* Readme.md usage
+
+Improved Documentation
+----------------------
+
+* Add examples to the readme.md
+
+$ docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/pygitver changelog --format json | jq .
+{
+  "version": "v0.0.3",
+  "bump_rules": {
+    "major": false,
+    "minor": false,
+    "patch": true
+  },
+  "changelog": {
+    "features": [
+      "allow to trigger job manually"
+    ],
+    "bugfixes": [
+      "path for the default changelog template",
+      "README.md usage"
+    ],
+    "deprecations": [],
+    "others": [],
+    "docs": [
+      "Add examples to the README.md"
+    ],
+    "non_conventional_commit": []
+  }
+}
+$ docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/pygitver --help
+usage: pygitver.py [-h] [-v] [-cv] [-nv] [-t] [-ccm CHECK_COMMIT_MESSAGE]
+                   {changelog,changelogs} ...
+
+pygitver tool, ver: 0.1.2
+
+options:
+  -h, --help            show this help message and exit
+  -v, --version         show tool version
+  -cv, --curr-ver       get current version (last git tag)
+  -nv, --next-ver       get next version (bump last git tag)
+  -t, --tags            git tags
+  -ccm CHECK_COMMIT_MESSAGE, --check-commit-message CHECK_COMMIT_MESSAGE
+                        check if the git commit message is valid for
+                        Conventional Commits
+
+Get changelog:
+  {changelog,changelogs}
+                        Get changelog in TEXT or JSON format
+```
+
 ## Conventional Commits Rules
 The tool supports simplified Conventional Commits, which are described in this section.
 
