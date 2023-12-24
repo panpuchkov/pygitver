@@ -1,8 +1,5 @@
 FROM python:3.12-alpine as build
 
-ENV SEMVER_HELPER_TEMPLATE_CHANGELOG="/pygitver/templates/changelog.tmpl"
-ENV SEMVER_HELPER_ROOT="/pygitver"
-
 # Make sure we use the virtualenv:
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
@@ -13,6 +10,9 @@ RUN pip install --no-cache-dir -U pip  \
     && pip install --no-cache-dir -r /pygitver/requirements.txt
 
 FROM python:3.12-alpine
+
+ENV PYGITVER_TEMPLATE_CHANGELOG="/pygitver/templates/changelog.tmpl"
+ENV PYGITVER_ROOT="/pygitver"
 
 # Install dependencies
 RUN apk add --no-cache git openssh \

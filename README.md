@@ -125,7 +125,7 @@ v1.0.0
 
 * Take as an example: `./src/templates/changelog.tmpl`
 * Place somewhere in your project custom template
-* Send environment variable `SEMVER_HELPER_TEMPLATE_CHANGELOG` to docker 
+* Send environment variable `PYGITVER_TEMPLATE_CHANGELOG` to docker 
   on run with full template path in Docker (usually `/app/...`)
 
 ### Development
