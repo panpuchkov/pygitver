@@ -1,8 +1,8 @@
 #!/bin/sh
 
-SEMVER_ROOT="/pygitver"
+PYGITVER_ROOT="/pygitver"
 GIT_HOOK_COMMIT_MSG_FILE_DST=".git/hooks/commit-msg"
-GIT_HOOK_COMMIT_MSG_FILE_SRC="${SEMVER_ROOT}/scripts/git/hooks/commit-msg"
+GIT_HOOK_COMMIT_MSG_FILE_SRC="${PYGITVER_ROOT}/scripts/git/hooks/commit-msg"
 
 echo "Installing git hook.";
 if [ ! -r ".git" ]; then
