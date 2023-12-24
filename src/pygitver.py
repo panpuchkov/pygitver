@@ -32,7 +32,7 @@ def main():
         required=False,
     )
     parser.add_argument(
-        "-t", "--tags", action="store_true", help="git git tags", required=False
+        "-t", "--tags", action="store_true", help="git tags", required=False
     )
     parser.add_argument(
         "-ccm",

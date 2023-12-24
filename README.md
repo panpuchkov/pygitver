@@ -111,13 +111,13 @@ $ echo $? # get exit code
 
 Get current version (last git tag):
 ```shell
-$ docker run --rm -v $(pwd):/app -w /app panpuchkov/pygitver --curr-ver
+$ docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/pygitver --curr-ver
 v0.0.3
 ```
 
 Get next version (bump last git tag):
 ```shell
-$ docker run --rm -v $(pwd):/app -w /app panpuchkov/pygitver --next-ver
+$ docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/pygitver --next-ver
 v1.0.0
 ```
 
