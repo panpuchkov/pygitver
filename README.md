@@ -6,14 +6,14 @@ Features:
 * Bump version based on CHANGELOG
 
 ## Conventional Commits Rules
-Tool supports simplified Conventional Commits which are described in this section.
+The tool supports simplified Conventional Commits, which are described in this section.
 
 The commit message should be structured as follows:
 ```shell
 <type>[optional scope]: <description>
 ```
  
-The commit contains the following structural elements, to communicate intent to the consumers of your library:
+The commit contains the following structural elements to communicate intent to the consumers of your library:
 * `fix:` a commit of the type fix patches a bug in your codebase (this correlates with `PATCH` in Semantic Versioning).
 * `feat:` a commit of the type feat introduces a new feature to the codebase (this correlates with `MINOR` in Semantic Versioning).
 * `BREAKING CHANGE:` a commit that has a footer `BREAKING CHANGE:`, or appends a `!` after the type/scope, introduces a breaking API change (correlating with `MAJOR` in Semantic Versioning). A BREAKING CHANGE can be part of commits of any type.
@@ -21,25 +21,25 @@ The commit contains the following structural elements, to communicate intent to 
 
 ### Conventional Commits Examples:
 
-Commit without scope without breaking change
+Commit without scope without breaking change.
 ```
 fix: crash on wrong input data
 ```
  
 
-Commit message with ! to draw attention to breaking change
+Commit message with ! to draw attention to breaking change.
 ```
 feat!: send an email to the customer when a product is shipped
 ```
  
 
-Commit message with scope and ! to draw attention to breaking change
+Commit message with scope and ! to draw attention to breaking change.
 ```
 feat(api)!: send an email to the customer when a product is shipped
 ```
 
 
-Commit message with scope
+Commit message with scope.
 ```
 feat(lang): add Polish language
 ```
@@ -51,7 +51,7 @@ feat(lang): add Polish language
 ### Install pygitver
 Run in the `git` root folder of the target repository on localhost. 
 ```shell
-docker run --rm -v $(pwd):/app -w /app --entrypoint '' panpuchkov/pygitver /pygitver/scripts/install.sh
+docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" --entrypoint '' panpuchkov/pygitver /pygitver/scripts/install.sh
 ```
 
 * It doesn't matter what the current branch is.
@@ -59,7 +59,7 @@ docker run --rm -v $(pwd):/app -w /app --entrypoint '' panpuchkov/pygitver /pygi
 
 ### Update pygitver
 
-Run in terminal in any folder:
+Run in a terminal in any folder:
 
 ```shell
 docker pull panpuchkov/pygitver
@@ -67,7 +67,7 @@ docker pull panpuchkov/pygitver
 
 ### Usage
 
-You don't need to use it directly, it will be used automatically on each git commit.
+You don't need to use it directly; it will be used automatically on each git commit.
 
 _Example of a commit message that is **NOT VALID** for Conventional Commits:_
 ```shell
@@ -88,8 +88,8 @@ _Note: repeat this procedure for each repository_
 
 ### Usage
 
-_**Note:** The tool is running in the docker container and mounting your repository to it. 
-It means that you have to run it just from the root directory of the repository, 
+_**Note:** The tool is running in the docker container and mounting your repository. 
+It means that you have to run it just from the repository's root directory, 
 from the directory with `.git` folder._
 
 ```shell
@@ -149,9 +149,9 @@ tox
 
 ##### A single file of the test run
 ```shell
- tox -e coverage -- ./tests/test_git.py -vv
+tox -e coverage -- ./tests/test_git.py -vv
 ```
 or
 ```shell
- coverage run -m pytest -- ./tests/test_git.py 
+coverage run -m pytest -- ./tests/test_git.py 
 ```
