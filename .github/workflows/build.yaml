@@ -62,5 +62,9 @@ jobs:
         shell: bash
         run: |
           set -x
-          IMAGE_NAME_WITH_VERSION="${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
+          DOCKER_TAG="$(git tag --contains)"
+          if [[ "${DOCKER_TAG}" == "" ]]; then
+            DOCKER_TAG="latest"
+          fi
+          IMAGE_NAME_WITH_VERSION="${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${DOCKER_TAG}"
           docker push "${IMAGE_NAME_WITH_VERSION}"
