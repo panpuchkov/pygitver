@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 FROM python:3.12-alpine as build
 
 ENV SEMVER_HELPER_TEMPLATE_CHANGELOG="/pygitver/templates/changelog.tmpl"
