@@ -1,5 +1,5 @@
 .idea
 .tox
 .coverage
-*/__pychache__/*
+*/__pycache__/*
 venv
