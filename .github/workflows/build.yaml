@@ -1,6 +1,7 @@
 name: Docker Build & Push
 permissions: write-all
-'on':
+
+on:
   push:
     branches:
       - main
@@ -11,6 +12,8 @@ permissions: write-all
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+
 env:
   IMAGE_NAME: 'pygitver'
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
