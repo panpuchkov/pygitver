@@ -1,7 +1,7 @@
 import argparse
 
-from git import Git, GitError
-from changelogs_mngr import ChangelogsMngr, ChangelogsMngrError
+from pygitver.git import Git, GitError
+from pygitver.changelogs_mngr import ChangelogsMngr, ChangelogsMngrError
 import json
 
 
@@ -116,9 +116,7 @@ def main():
             output = join_changelogs.read_files(path=args.dir, file_ext="json")
             if args.format == "text":
                 try:
-                    print(
-                        join_changelogs.changelog_generate(template_name=args.template)
-                    )
+                    print(join_changelogs.generate(template_name=args.template))
                 except ChangelogsMngrError as err:
                     print(err)
                     exit(1)

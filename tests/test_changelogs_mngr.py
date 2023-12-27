@@ -1,7 +1,9 @@
+import os
 import json
 import unittest
-from src.changelogs_mngr import ChangelogsMngr, Git, ChangelogsMngrError
 from unittest import mock
+from pygitver.changelogs_mngr import ChangelogsMngr, ChangelogsMngrError
+from pygitver.git import Git
 
 
 class TestChangelogsMngr(unittest.TestCase):
@@ -14,10 +16,14 @@ class TestChangelogsMngr(unittest.TestCase):
             expected = json.load(fp)
         assert res == expected
 
+    @mock.patch.dict(os.environ, {"PYGITVER_TEMPLATE_CHANGELOG_COMMON": "src/pygitver/templates/changelog-common.tmpl"},
+                     clear=True)
     def test_join_changelogs_template(self):
         join_changelogs = ChangelogsMngr("2.1.2")
         join_changelogs.read_files("./tests/data/changelogs/", "json")
-        res = join_changelogs.changelog_generate(template_name="src/templates/changelog-common.tmpl")
+
+        res = join_changelogs.generate()
+
         expected = "# Change Log\n\n" \
                    "## Version: 3.0.0\n\n\n\n\n\n" \
                    "## Services\n\n\n\n" \
@@ -40,6 +46,12 @@ class TestChangelogsMngr(unittest.TestCase):
         for pos, _ in enumerate(l_res):
             self.assertEqual(l_expected[pos], l_res[pos])
 
+        res = join_changelogs.generate(template_name="src/pygitver/templates/changelog-common.tmpl")
+        l_res = res.split("\n")
+        l_expected = expected.split("\n")
+        for pos, _ in enumerate(l_res):
+            self.assertEqual(l_expected[pos], l_res[pos])
+
     def test_init_changelog(self):
         chl_mngr = ChangelogsMngr()
         chl_mngr._changelogs = {"version": "0.0.0", "services": {"test": None}}
@@ -53,6 +65,6 @@ class TestChangelogsMngr(unittest.TestCase):
         chl_mngr = ChangelogsMngr()
 
         with self.assertRaises(ChangelogsMngrError) as context:
-            chl_mngr.changelog_generate(template_name=template_name)
+            chl_mngr.generate(template_name=template_name)
         self.assertEqual(f"ERROR: Template '{template_name}' was not found.",
                          str(context.exception))

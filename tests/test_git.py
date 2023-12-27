@@ -1,4 +1,4 @@
-from src.git import Git
+from pygitver.git import Git
 
 GIT_LOG_OUTPUT_MOCK = "fix: test fix 1\n" \
                       "feat(api)!: new api\n" \
@@ -139,7 +139,7 @@ def test_changelog_generate(monkeypatch):
     monkeypatch.setattr(Git, "changelog", value=lambda *args, **kwargs: GIT_LOG_OUTPUT_MOCK)
     monkeypatch.setattr(Git, "git_version", value=lambda *args, **kwargs: "git version v1.0.0")
     changelog = Git.changelog_generate(changelog_group=Git.changelog_group(),
-                                       template_name="src/templates/changelog.tmpl")
+                                       template_name="src/pygitver/templates/changelog.tmpl")
     assert changelog == "##########\nChange Log\n##########\n\nVersion v1.0.0\n=============\n\n\n\n\n\n" \
                         "Features\n--------\n\n\n* New api\n\n\n\n\n\n" \
                         "Bug Fixes\n---------\n\n\n* Test fix 1\n\n* Test fix 2\n\n\n\n\n\n" \

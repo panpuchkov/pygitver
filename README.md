@@ -7,6 +7,24 @@ Features:
 
 # Examples
 
+You may use it as a Python package or a Docker container.
+
+## PIP Package
+
+```shell
+$ git tag -l
+v0.0.1
+v0.0.2
+$ pygitver --curr-ver
+v0.0.2
+$ pygitver --next-ver
+v0.0.3
+
+```
+
+
+## Docker Container
+
 ```shell
 $ git tag -l
 v0.0.1
@@ -234,4 +252,16 @@ tox -e coverage -- ./tests/test_git.py -vv
 or
 ```shell
 coverage run -m pytest -- ./tests/test_git.py 
+```
+
+#### Build pip package
+
+Linux
+```shell
+python3 -m build
+```
+
+For `Debian` based OS:
+```shell
+DEB_PYTHON_INSTALL_LAYOUT=deb_system python3 -m build
 ```
