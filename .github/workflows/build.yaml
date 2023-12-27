@@ -1,4 +1,4 @@
-name: Docker Build & Push
+name: Build & Push
 permissions: write-all
 
 on:
@@ -41,12 +41,15 @@ jobs:
           pip install -U tox
           pip install tox
           tox
+
   build:
     runs-on: ubuntu-latest
     needs: unittests
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Docker Build
         shell: bash
@@ -55,19 +58,50 @@ jobs:
           docker build -t "${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}" .
 
       - name: Log in to Docker Hub
-        if: github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKER_USERNAME }}
+          username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Detect package version
+        shell: bash
+        run: |
+          set -x
+          PACKAGE_VERSION="$(git tag --contains)"
+          if [[ "${PACKAGE_VERSION}" == "" ]]; then
+            PACKAGE_VERSION="$(docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/pygitver --next-ver)-dev"
+            PACKAGE_VERSION=$(echo "${PACKAGE_VERSION}" | sed 's/^v*//' )
+            DOCKER_TAG_LATEST="${PACKAGE_VERSION}"
+          else
+            DOCKER_TAG_LATEST="latest"
+          fi
+
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "DOCKER_TAG_LATEST=$DOCKER_TAG_LATEST" >> $GITHUB_ENV
 
       - name: Docker Push
         shell: bash
         run: |
           set -x
-          DOCKER_TAG="$(git tag --contains)"
-          if [[ "${DOCKER_TAG}" == "" ]]; then
-            DOCKER_TAG="latest"
+          # Generate docker tags
+          IMAGE_NAME_WITH_TAG_VERSION="${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${PACKAGE_VERSION}"
+          IMAGE_NAME_WITH_TAG_LATEST="${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${DOCKER_TAG_LATEST}"
+          
+          # Set docker tag
+          docker tag "${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest" "${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${PACKAGE_VERSION}"
+          docker push "${IMAGE_NAME_WITH_TAG_VERSION}"
+          
+          # Push latest if required
+          if [[ "${IMAGE_NAME_WITH_TAG_LATEST}" != "${IMAGE_NAME_WITH_TAG_LATEST}" ]]; then
+            docker push "${IMAGE_NAME_WITH_TAG_LATEST}"
           fi
-          IMAGE_NAME_WITH_VERSION="${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${DOCKER_TAG}"
-          docker push "${IMAGE_NAME_WITH_VERSION}"
+
+      - name: Pip Build & Push
+        shell: bash
+        run: |
+          set -x
+          pip install -r requirements-build.txt
+          python -m build
+          sudo apt-get -y install twine
+          twine check dist/*
+          twine upload --skip-existing -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} dist/* --verbose
