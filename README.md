@@ -5,6 +5,19 @@ Features:
 * Generate CHANGELOG and group of CHANGELOGs 
 * Bump version based on CHANGELOG
 
+# Install
+
+Use as python CLI (python is required)
+
+```shell
+pip install pygitver
+```
+
+Use as a docker container (docker engine is required)
+```shell
+docker pull panpuchkov/pygitver
+```
+
 # Users (Developers) Section
 
 ## Install Conventional Commit Git Hook Checker
