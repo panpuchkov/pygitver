@@ -1,5 +1,6 @@
-import json
 import os
+import pathlib
+import json
 import re
 import subprocess
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -252,8 +253,10 @@ class Git:
         :return: string with formatted changelog
         """
         if not template_name:
+            script_directory = pathlib.Path(__file__).parent.resolve()
             template_name = os.getenv(
-                "PYGITVER_TEMPLATE_CHANGELOG", "templates/changelog.tmpl"
+                "PYGITVER_TEMPLATE_CHANGELOG",
+                f"{script_directory}/templates/changelog.tmpl",
             )
         try:
             env = Environment(loader=FileSystemLoader(os.path.dirname(template_name)))

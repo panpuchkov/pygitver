@@ -1,6 +1,7 @@
 import os
+import pathlib
 import json
-from git import Git, GitError
+from pygitver.git import Git, GitError
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
@@ -49,9 +50,13 @@ class ChangelogsMngr:
             self._changelogs["version"] = None
         return self._changelogs
 
-    def changelog_generate(
-        self, template_name: str = "templates/changelog-common.tmpl"
-    ) -> str:
+    def generate(self, template_name: str = "") -> str:
+        if not template_name:
+            script_directory = pathlib.Path(__file__).parent.resolve()
+            template_name = os.getenv(
+                "PYGITVER_TEMPLATE_CHANGELOG_COMMON",
+                f"{script_directory}/templates/changelog-common.tmpl",
+            )
         try:
             env = Environment(loader=FileSystemLoader(os.path.dirname(template_name)))
             template = env.get_template(os.path.basename(template_name))

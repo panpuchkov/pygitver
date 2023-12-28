@@ -1,0 +1,38 @@
+[project]
+name = "pygitver"
+version = "0.1.0-dev"
+authors = [
+  { name="Yurii Puchkov", email="panpuchkov@gmail.com" },
+]
+license = {text = "GNU General Public License v3 (GPLv3)"}
+description = "Manages Git Tag versions and generates ChangeLog"
+keywords = ["git tag", "version", "versions", "conventional commit", "semver", "changelog", "changelogs"]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "Jinja2==3.1.2"
+]
+
+
+[build-system]
+requires = ["setuptools>=63", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project.scripts]
+pygitver = "pygitver.pygitver:main"
+
+[metadata]
+url = "https://github.com/panpuchkov/pygitver"
+
+
+[tool.setuptools.package-data]
+pygitver = ["*.py", "*.tmpl"]
