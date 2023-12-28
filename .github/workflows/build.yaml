@@ -91,7 +91,8 @@ jobs:
           docker push "${IMAGE_NAME_WITH_TAG_VERSION}"
           
           # Push latest if required
-          if [[ "${IMAGE_NAME_WITH_TAG_LATEST}" != "${IMAGE_NAME_WITH_TAG_LATEST}" ]]; then
+          if [[ "${DOCKER_TAG_LATEST}" == "latest" ]]; then
+            docker tag "${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest" "${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest"
             docker push "${IMAGE_NAME_WITH_TAG_LATEST}"
           fi
 

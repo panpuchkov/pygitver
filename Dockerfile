@@ -20,15 +20,12 @@ RUN apk add --no-cache git  \
 ################################################################
 FROM python:3.12-alpine
 
-ENV PYGITVER_TEMPLATE_CHANGELOG="/pygitver/templates/changelog.tmpl"
-ENV PYGITVER_TEMPLATE_CHANGELOG_COMMON="/pygitver/templates/changelog-common.tmpl"
 ENV PYGITVER_ROOT="/pygitver"
 
 # Install dependencies
 RUN apk add --no-cache git openssh
 
 # Copy application code and
-COPY ./src/pygitver/templates /pygitver/templates
 COPY ./src/pygitver/scripts /pygitver/scripts
 COPY --from=build /opt/venv /opt/venv
 
