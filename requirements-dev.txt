@@ -1,5 +1,3 @@
-Jinja2
-
 tox
 pytest
 black

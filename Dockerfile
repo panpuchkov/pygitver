@@ -29,7 +29,7 @@ RUN apk add --no-cache git openssh
 
 # Copy application code and
 COPY ./src/pygitver/templates /pygitver/templates
-COPY ./scripts /pygitver/scripts
+COPY ./src/pygitver/scripts /pygitver/scripts
 COPY --from=build /opt/venv /opt/venv
 
 WORKDIR /app
