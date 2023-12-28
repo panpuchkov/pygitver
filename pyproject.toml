@@ -1,6 +1,6 @@
 [project]
 name = "pygitver"
-version = "0.1.0-dev"
+version = "0.1.0"
 authors = [
   { name="Yurii Puchkov", email="panpuchkov@gmail.com" },
 ]
@@ -34,5 +34,8 @@ pygitver = "pygitver.pygitver:main"
 url = "https://github.com/panpuchkov/pygitver"
 
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.setuptools.package-data]
-pygitver = ["*.py", "*.tmpl"]
+"*" = ["*"]

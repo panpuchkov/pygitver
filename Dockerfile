@@ -11,13 +11,11 @@ WORKDIR /build-pkg
 COPY . /build-pkg
 
 RUN apk add --no-cache git  \
-    && pip install --no-cache-dir -U pip  \
-    && pip install --no-cache-dir -r requirements.txt  \
-    && pip install --no-cache-dir -r requirements-build.txt  \
+    && pip install --no-cache-dir -U pip -r requirements-build.txt  \
     && rm -rf dist  \
     && python -m build  \
-    && pip install $(ls /build-pkg/dist/pygitver-*.tar.gz)  \
-    && pip uninstall -r requirements-build.txt -y
+    && pip uninstall -r requirements-build.txt -y \
+    && pip install --no-cache-dir "$(ls /build-pkg/dist/pygitver-*.tar.gz)"
 
 ################################################################
 FROM python:3.12-alpine
@@ -31,7 +29,7 @@ RUN apk add --no-cache git openssh
 
 # Copy application code and
 COPY ./src/pygitver/templates /pygitver/templates
-COPY ./scripts /pygitver/scripts
+COPY ./src/pygitver/scripts /pygitver/scripts
 COPY --from=build /opt/venv /opt/venv
 
 WORKDIR /app

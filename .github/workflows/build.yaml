@@ -28,11 +28,10 @@ jobs:
           fetch-depth: 0
 
       - name: Dockerfile lint
-        if: ${{ env.IMAGE_EXIST == 'false' }}
         id: validate-dockerfile
         shell: bash
         run: |
-          docker run --rm -e HADOLINT_IGNORE=DL3007,DL3008,DL3018,DL4006,DL3013 -i hadolint/hadolint < Dockerfile
+          docker run --rm -e HADOLINT_IGNORE=DL3018,DL3013 -i hadolint/hadolint < Dockerfile
 
       - name: Unit Tests
         shell: bash
@@ -100,8 +99,8 @@ jobs:
         shell: bash
         run: |
           set -x
+          sudo apt-get -y install twine
           pip install -r requirements-build.txt
           python -m build
-          sudo apt-get -y install twine
           twine check dist/*
           twine upload --skip-existing -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} dist/* --verbose
