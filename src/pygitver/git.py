@@ -23,7 +23,7 @@ RE_CONVENTIONAL_COMMIT = (
 
 
 class Git:
-    __version__ = "0.1.1"
+    __version__ = "0.1.2"
 
     @staticmethod
     def _cmd(command: str) -> str:
