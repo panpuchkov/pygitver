@@ -359,3 +359,8 @@ def test_changelog_group_bump_version():
     res = Git._changelog_group_sort(git_log="fix: api, breaking change: remove api endpoint", commit_wo_prefix=False,
                                     unique=True)
     assert res["bump_rules"]["major"]
+
+    # No update
+    res = Git._changelog_group_sort(git_log="", commit_wo_prefix=False, unique=True)
+    expected_bump_rules = {'major': False, 'minor': False, 'patch': False}
+    assert expected_bump_rules == res["bump_rules"]

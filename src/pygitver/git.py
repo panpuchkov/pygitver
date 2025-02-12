@@ -108,6 +108,8 @@ class Git:
         bump_rules: dict = {"major": False, "minor": False, "patch": False}
         for commit in git_log.rstrip().split("\n"):
             commit = commit.rstrip()
+            if len(commit) == 0:
+                continue
             commit_normalized = (
                 cls._commit_msg_normalize(commit) if commit_wo_prefix else commit
             )
