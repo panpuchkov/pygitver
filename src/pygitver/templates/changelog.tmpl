@@ -1,16 +1,12 @@
-##########
-Change Log
-##########
+# Change Log
 
-Version {{ version }}
-=============
+## Version {{ version }}
 
 {% if date %}:Released: {{ date }}{% endif %}
 {% if maintainer %}:Maintainer: {{ maintainer }}{% endif %}
 
 {% if features %}
-Features
---------
+### Features
 
 {% for item in features %}
 * {{ item | capitalize }}
@@ -19,8 +15,7 @@ Features
 
 
 {% if bugfixes %}
-Bug Fixes
----------
+### Bug Fixes
 
 {% for item in bugfixes %}
 * {{ item | capitalize }}
@@ -29,8 +24,7 @@ Bug Fixes
 
 
 {% if deprecations %}
-Deprecations
-------------
+### Deprecations
 
 {% for item in deprecations %}
 * {{ item | capitalize }}
@@ -38,8 +32,7 @@ Deprecations
 {% endif %}
 
 {% if docs %}
-Improved Documentation
-----------------------
+### Improved Documentation
 
 {% for item in docs %}
 * {{ item | capitalize }}
@@ -47,8 +40,7 @@ Improved Documentation
 {% endif %}
 
 {% if others %}
-Trivial/Internal Changes
-------------------------
+### Trivial/Internal Changes
 
 {% for item in others %}
 * {{ item | capitalize }}

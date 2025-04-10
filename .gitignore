@@ -1,4 +1,8 @@
+# IDE
 .idea
+.vscode
+
+# Other
 .tox
 .coverage
 */__pycache__/*
