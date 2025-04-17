@@ -1,4 +1,6 @@
+import os
 from pygitver.git import Git
+from unittest import mock
 
 GIT_LOG_OUTPUT_MOCK = "fix: test fix 1\n" \
                       "feat(api)!: new api\n" \
@@ -40,6 +42,27 @@ def test_version_current(monkeypatch):
 
     monkeypatch.setattr(Git, "tags", lambda: ["v23.08.10-rc.1", "0.0.1", "0.0.0"])
     assert "v23.08.10-rc.1" == Git.version_current()
+
+    monkeypatch.setattr(Git, "tags", lambda: ["service23.08.10-rc.1", "0.0.1", "0.0.0"])
+    assert "service23.08.10-rc.1" == Git.version_current()
+
+    monkeypatch.setattr(Git, "tags", lambda: ["service_a_0.1.1", "service_b_0.1.2", "service_c_2.1.0", "3.2.1", "0.0.0"])
+    assert "service_a_0.1.1" == Git.version_current("service_a_")
+
+    monkeypatch.setattr(Git, "tags", lambda: ["service_a_0.1.1", "service_b_0.1.2", "service_c_2.1.0", "3.2.1", "0.0.0"])
+    assert "service_b_0.1.2" == Git.version_current("service_b_")
+
+
+@mock.patch.dict(os.environ, {"PYGITVER_VERSION_PREFIX": "service_b_"}, clear=True)
+def test_version_current_with_defined_prefix_b(monkeypatch):
+    monkeypatch.setattr(Git, "tags", lambda: ["service_a_0.1.1", "service_b_0.1.2", "service_c_2.1.0", "3.2.1", "0.0.0"])
+    assert "service_b_0.1.2" == Git.version_current()
+
+
+@mock.patch.dict(os.environ, {"PYGITVER_VERSION_PREFIX": "service_a_"}, clear=True)
+def test_version_current_with_defined_prefix_a(monkeypatch):
+    monkeypatch.setattr(Git, "tags", lambda: ["service_a_0.1.1", "service_b_0.1.2", "service_c_2.1.0", "3.2.1", "0.0.0"])
+    assert "service_a_0.1.1" == Git.version_current()
 
 
 def test_changelog_group(monkeypatch):
