@@ -28,7 +28,7 @@ class Git:
     @staticmethod
     def _cmd(command: str) -> str:
         """
-        Run shell command, used for running git commands.
+        Run a shell command, used for running git commands.
 
         :param command: string with shell command
         :return: string with the raw output of the shell stdout
@@ -48,7 +48,7 @@ class Git:
     @classmethod
     def _commit_msg_normalize(cls, commit: str) -> str:
         """
-        Normalize commit message, removes pygitver prefix from git commit,
+        Normalize commit message, removes pygitver prefix from git commit.
             example: "fix: commit message" -> "commit message".
 
         :param commit: string with the commit message
@@ -65,12 +65,12 @@ class Git:
         section: list, _commit_normalized: str, _unique: bool
     ) -> None:
         """
-        Append commit to the required section.
+        Append a commit to the required section.
 
         :param section: target section where to add a commit message
             (normalized or as is)
         :param _commit_normalized: Normalize commit message if True
-        :param _unique: do not add duplicates if is True
+        :param _unique: do not add duplicates if it is True
         """
         if _unique:
             if _commit_normalized not in section:
@@ -83,13 +83,13 @@ class Git:
         cls, git_log: str, commit_wo_prefix: bool, unique: bool
     ) -> dict:
         """
-        Sort change log by groups (features, bugfixes, deprecations, docs,
+        Sort changes log by groups (features, bugfixes, deprecations, docs,
         others).
 
         :param git_log: multiline string with commits (one line per
             commit)
         :param unique: do not show duplicates commit if True
-        :param commit_wo_prefix: remove commit pygitver prefix if is True
+        :param commit_wo_prefix: remove commit pygitver prefix if it is True
         :return: dict with commits sorted by groups and 'bump_rules',
             example: { "bump_rules": {"major": False, "minor": True,
             "patch": True}, "changelog": { 'features': [ 'feat(api)!:
@@ -152,8 +152,8 @@ class Git:
     @staticmethod
     def _version_prefix(version: str) -> str:
         """
-        Get version prefix if exists, example version "v1.0.0", the prefix is
-        "v".
+        Get version prefix if exists, for example, version "v1.0.0", the prefix
+        is "v".
 
         :param version: string with version
         :return: string with prefix, empty string if no prefix
@@ -165,7 +165,7 @@ class Git:
     @classmethod
     def tags(cls, update_from_remote: bool = False):
         """
-        Get git tags sorted in back order.
+        Get git tags sorted in reverse order.
 
         :param update_from_remote: run git fetch from remote before
             getting tags
@@ -188,7 +188,7 @@ class Git:
         Check if the git commit message is valid for Conventional Commits.
 
         :param commit: git commit message
-        :return: True if message is valid for Conventional Commits
+        :return: True if the message is valid for Conventional Commits
         """
         return bool(
             re.match(f"{RE_CONVENTIONAL_COMMIT}([^\\s\\t]+)", commit, re.IGNORECASE)
@@ -223,7 +223,7 @@ class Git:
         unique: bool = False,
     ) -> dict:
         """
-        Get raw change log from the 'start' to the 'end' steps.
+        Get a raw change log from the 'start' to the 'end' steps.
 
         :param start: from git tag
         :param end: to git tag of HEAD by default
@@ -246,7 +246,7 @@ class Git:
     @staticmethod
     def changelog_generate(changelog_group: dict, template_name: str = "") -> str:
         """
-        Generate full changelog.
+        Generate a full changelog.
 
         :param changelog_group: dictionary with changelog (result of the
             function 'changelog_group')
@@ -273,7 +273,7 @@ class Git:
     @classmethod
     def git_version(cls) -> str:
         """
-        Get installed git version.
+        Get the installed git version.
 
         :return: string with git version
         """
@@ -284,9 +284,10 @@ class Git:
     @classmethod
     def version_current(cls) -> str:
         """
-        Get current (latest) git tag.
+        Get the current (latest) git tag.
 
-        :return: string with git tag or empty string if does not exist
+        :return: string with git tag or empty string if it does not
+            exist
         """
         for _tag in cls.tags():
             if cls.version_validate(_tag):
@@ -307,7 +308,7 @@ class Git:
     @classmethod
     def bump_current_version(cls, bump_rules: dict) -> str:
         """
-        Get current version and bump is base on 'bump_rules' dict.
+        Get and bump the current version based on the 'bump_rules' dict.
 
         :param bump_rules: bump version rules, example: {"major": False,
             "minor": True, "patch": False} version rules will be applied
@@ -319,7 +320,7 @@ class Git:
     @classmethod
     def bump_version(cls, version: str, bump_rules: dict) -> str:
         """
-        Get current version and bump is base on 'bump_rules' dict.
+        Get and bump the current version based on the 'bump_rules' dict.
 
         :param version: set new version if defined, otherwise take
             current
@@ -340,7 +341,7 @@ class Git:
             version_items[1] = str(int(version_items[1]) + 1)
             version_items[2] = "0"
         elif bump_rules["patch"] is True:
-            # this case is covered by 'test_bump_version_auto', but not recognised by linter
+            # This case is covered by 'test_bump_version_auto', but not recognized by the linter
             version_items[2] = str(int(version_items[2]) + 1)
         version = ".".join(version_items)
         return version_prefix + (version if version != "0.0.0" else "0.0.1")
