@@ -23,7 +23,7 @@ RE_CONVENTIONAL_COMMIT = (
 
 
 class Git:
-    __version__ = "0.1.2"
+    __version__ = "0.1.3"
 
     @staticmethod
     def _cmd(command: str) -> str:
@@ -197,7 +197,7 @@ class Git:
     @classmethod
     def changelog(cls, start: str = "", end: str = "") -> str:
         """
-        Get raw change log from the 'start' to the 'end' steps.
+        Get a raw change log from the 'start' to the 'end' steps.
 
         :param start: from git tag
         :param end: to git tag of HEAD by default
@@ -282,14 +282,20 @@ class Git:
         return res
 
     @classmethod
-    def version_current(cls) -> str:
+    def version_current(cls, prefix: str = "") -> str:
         """
         Get the current (latest) git tag.
 
+        :param prefix: custom version prefix
         :return: string with git tag or empty string if it does not
             exist
         """
+        if len(prefix) == 0:
+            prefix = os.environ.get("PYGITVER_VERSION_PREFIX", "")
         for _tag in cls.tags():
+            if len(prefix) > 0 and not _tag.startswith(prefix):
+                continue
+
             if cls.version_validate(_tag):
                 return _tag
         return "0.0.0"

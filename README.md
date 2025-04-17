@@ -231,6 +231,31 @@ Get changelog:
   on run with full template path in Docker (usually `/app/...`)
 
 
+## Custom Git Tag Version Prefix
+
+If a Git repository has more than one application/service, you may need to have different versions for each of them.
+Example 
+```bash
+$ git tag -l
+app_a_1.2.3
+...
+app_b_2.5.2
+...
+```
+If you want to get the current and next versions for `app_a`, you can use the environment variable `PYGITVER_VERSION_PREFIX`.
+Example:
+```bash
+$ PYGITVER_VERSION_PREFIX=app_a_ python -m pygitver.pygitver --curr-ver
+app_a_1.2.3
+$ PYGITVER_VERSION_PREFIX=app_a_ python -m pygitver.pygitver --next-ver
+app_a_1.3.0
+$ PYGITVER_VERSION_PREFIX=app_b_ python -m pygitver.pygitver --curr-ver
+app_b_2.5.3
+$ PYGITVER_VERSION_PREFIX=app_b_ python -m pygitver.pygitver --next-ver
+app_b_2.6.0
+```
+
+
 # Conventional Commits Rules
 The tool supports simplified Conventional Commits, which are described in this section.
 
