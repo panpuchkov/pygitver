@@ -69,7 +69,7 @@ jobs:
             DOCKER_TAG_LATEST="latest"
           fi
 
-          # Generate docker tags
+          # Generate Docker tags
           IMAGE_NAME_WITH_TAG_VERSION="${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${PACKAGE_VERSION}"
           IMAGE_NAME_WITH_TAG_LATEST="${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${DOCKER_TAG_LATEST}"
 
@@ -98,7 +98,8 @@ jobs:
         shell: bash
         run: |
           set -x
-          sudo apt-get -y install twine
+          python -m pip install --upgrade pip setuptools wheel build
+          pip install twine
           pip install -r requirements-build.txt
           python -m build
           twine check dist/*
