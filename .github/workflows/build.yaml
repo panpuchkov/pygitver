@@ -103,4 +103,4 @@ jobs:
           pip install -r requirements-build.txt
           python -m build
           twine check dist/*
-          twine upload --skip-existing -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} dist/* --verbose
+          twine upload --skip-existing -u __token__ -p "${{ secrets.PYPI_API_TOKEN }}" dist/* --verbose
