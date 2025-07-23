@@ -1,6 +1,6 @@
 import argparse
 
-from pygitver.git import Git, GitError
+from pygitver.git import Git, GitError, CURRENT_VERSION_DEFAULT
 from pygitver.changelogs_mngr import ChangelogsMngr, ChangelogsMngrError
 import json
 
@@ -109,6 +109,8 @@ def main():
             print(Git.version_current())
         elif args.next_ver:
             curr_ver = Git.version_current()
+            if CURRENT_VERSION_DEFAULT == curr_ver:
+                curr_ver = ""
             changelog_group = Git.changelog_group(start=curr_ver)
             print(changelog_group["version"])
         elif "dir" in args:
