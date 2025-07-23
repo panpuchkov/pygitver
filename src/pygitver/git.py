@@ -22,6 +22,9 @@ RE_CONVENTIONAL_COMMIT = (
 )
 
 
+CURRENT_VERSION_DEFAULT = "v0.0.0"
+
+
 class Git:
     __version__ = "0.2.1"
 
@@ -298,7 +301,7 @@ class Git:
 
             if cls.version_validate(_tag):
                 return _tag
-        return "0.0.0"
+        return CURRENT_VERSION_DEFAULT
 
     @staticmethod
     def version_validate(version: str) -> bool:

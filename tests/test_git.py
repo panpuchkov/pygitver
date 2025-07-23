@@ -23,13 +23,13 @@ def test_tags():
 
 def test_version_current(monkeypatch):
     monkeypatch.setattr(Git, "tags", lambda: [])
-    assert "0.0.0" == Git.version_current()
+    assert "v0.0.0" == Git.version_current()
 
     monkeypatch.setattr(Git, "tags", lambda: ["0.0.2", "0.0.1"])
     assert "0.0.2" == Git.version_current()
 
     monkeypatch.setattr(Git, "tags", lambda: ["1.0.error"])
-    assert "0.0.0" == Git.version_current()
+    assert "v0.0.0" == Git.version_current()
 
     monkeypatch.setattr(Git, "tags", lambda: ["1.0.error", "0.1.2"])
     assert "0.1.2" == Git.version_current()
@@ -387,3 +387,19 @@ def test_changelog_group_bump_version():
     res = Git._changelog_group_sort(git_log="", commit_wo_prefix=False, unique=True)
     expected_bump_rules = {'major': False, 'minor': False, 'patch': False}
     assert expected_bump_rules == res["bump_rules"]
+
+
+def test_changelog_without_current_version(monkeypatch):
+    def fake_cmd(command: str):
+        if "git log --pretty=format:%H --reverse -n 1" in command:
+            return "firstsha"
+        elif "git log --pretty=format:%s" in command:
+            return "fix: patch 1\nfeat: new feature"
+        return ""
+
+    monkeypatch.setattr(Git, "_cmd", value=fake_cmd)
+    monkeypatch.setattr(Git, "version_current", value=lambda: "")
+
+    result = Git.changelog()
+    assert "patch 1" in result
+    assert "new feature" in result
