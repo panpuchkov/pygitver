@@ -23,13 +23,13 @@ def test_tags():
 
 def test_version_current(monkeypatch):
     monkeypatch.setattr(Git, "tags", lambda: [])
-    assert "0.0.0" == Git.version_current()
+    assert "v0.0.0" == Git.version_current()
 
     monkeypatch.setattr(Git, "tags", lambda: ["0.0.2", "0.0.1"])
     assert "0.0.2" == Git.version_current()
 
     monkeypatch.setattr(Git, "tags", lambda: ["1.0.error"])
-    assert "0.0.0" == Git.version_current()
+    assert "v0.0.0" == Git.version_current()
 
     monkeypatch.setattr(Git, "tags", lambda: ["1.0.error", "0.1.2"])
     assert "0.1.2" == Git.version_current()

@@ -298,7 +298,7 @@ class Git:
 
             if cls.version_validate(_tag):
                 return _tag
-        return "0.0.0"
+        return "v0.0.0"
 
     @staticmethod
     def version_validate(version: str) -> bool:
