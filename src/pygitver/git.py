@@ -176,11 +176,10 @@ class Git:
         """
         if update_from_remote:  # pragma: no cover
             cls._cmd("git fetch --all --tags")
-        branch = cls._cmd("git branch --show-current").strip("\r").strip("\n")
         res = list(
             filter(
                 None,
-                cls._cmd(f"git tag -l --sort=-v:refname --merged {branch}").split("\n"),
+                cls._cmd("git tag -l --sort=-v:refname").split("\n"),
             )
         )
         return res
