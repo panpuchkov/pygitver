@@ -118,7 +118,7 @@ class Git:
             )
             if bool(
                 re.search(
-                    r"(^.*!:.+)|(^breaking change)|(^deprecated.*)|(.*:.*breaking change:.*)",
+                    r"(^.*!:.+)|(^breaking change)|(.*:.*breaking change:.*)",
                     commit,
                     re.IGNORECASE,
                 )

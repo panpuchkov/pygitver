@@ -376,8 +376,11 @@ def test_changelog_group_bump_version():
     res = Git._changelog_group_sort(git_log="breaking change: api", commit_wo_prefix=False, unique=True)
     assert res["bump_rules"]["major"]
 
+    # Per Conventional Commits 1.0, a deprecation announcement is not itself
+    # a breaking change. Removal of a deprecated API is, but that comes via
+    # `!` or a `BREAKING CHANGE:` footer.
     res = Git._changelog_group_sort(git_log="deprecated: api", commit_wo_prefix=False, unique=True)
-    assert res["bump_rules"]["major"]
+    assert not res["bump_rules"]["major"]
 
     res = Git._changelog_group_sort(git_log="fix: api, breaking change: remove api endpoint", commit_wo_prefix=False,
                                     unique=True)
