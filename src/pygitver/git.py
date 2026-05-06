@@ -197,24 +197,20 @@ class Git:
         )
 
     @classmethod
-    def changelog(cls, start: str = "", end: str = "") -> str:
+    def changelog(cls, start: str = "", end: str = "HEAD") -> str:
         """
-        Get a raw change log from the 'start' to the 'end' steps.
+        Get a raw change log from `start` to `end`, merges excluded.
 
-        :param start: from git tag
-        :param end: to git tag of HEAD by default
-        :return: string with raw git log commit messages
+        With no `start`, the log spans full history rather than being
+        constrained to a range — a range like `firstsha...HEAD` would
+        exclude the first commit.
+
+        :param start: starting ref (tag/sha); empty means "from beginning".
+        :param end: ending ref; defaults to HEAD.
+        :return: newline-joined commit subjects.
         """
-        if not start:
-            start = cls._cmd("git log --pretty=format:%H --reverse -n 1")
-        if not end:
-            end = "HEAD"
-        git_commits_range = (
-            f"{start}...{end} " if "" != cls.version_current() else ""
-        )  # pragma: no cover
-        return cls._cmd(
-            f"git log --pretty=format:%s {git_commits_range}--no-merges"
-        )  # pragma: no cover
+        git_commits_range = f"{start}...{end} " if start else ""
+        return cls._cmd(f"git log --pretty=format:%s {git_commits_range}--no-merges")
 
     @classmethod
     def changelog_group(

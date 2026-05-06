@@ -54,13 +54,9 @@ Commands and flags currently in scope:
   Conventional Commit (per ADR-0001), else prints an error and exits 1.
 - `changelog [-s START] [-e END] [-f text|json]` — prints the changelog
   for the range (`START`..`END`). Defaults: `START` = current version
-  tag, `END` = `HEAD`, `f` = `text`. **Asymmetry with `--next-ver`:** if
-  no version tag exists, `START` defaults to the sentinel `v0.0.0`,
-  which is not a real ref. Git's exit code for the failed `git log`
-  invocation is propagated as the CLI's exit code, so `changelog` on a
-  tagless repo fails where `--next-ver` succeeds. Documented as a known
-  asymmetry; consumers that want to render a changelog on a fresh repo
-  must pass an explicit `--start` (e.g., the first commit hash).
+  tag, `END` = `HEAD`, `f` = `text`. On a tagless repo `START` is treated
+  as "from beginning" (full history), so the subcommand works without an
+  explicit `--start`.
 - `changelogs -d <DIR> [-clsv VERSION] [-f text|json] [-t TEMPLATE]` —
   aggregates per-service JSON changelogs from `DIR` into a combined
   document (see ADR-0006).
@@ -73,9 +69,7 @@ Exit code conventions:
   missing template for `changelogs`).
 - The exact `git` exit code passed through, when an underlying git
   invocation fails (transported via `GitError` in implementation; what
-  callers see is the same numeric code git would have given them). This
-  applies, for example, to `changelog` on a tagless repo (see the
-  asymmetry note above).
+  callers see is the same numeric code git would have given them).
 
 Stdout/stderr split:
 
@@ -141,10 +135,6 @@ Conventional Commits prefix stripped.
   than stderr (e.g., `print("ERROR: ...")` followed by `exit(1)`). This
   ADR explicitly does not lock that in. A future change to route
   diagnostics to stderr is a fix, not a contract break.
-- Bad: `changelog` on a tagless repo fails (git exit code propagated)
-  while `--next-ver` succeeds. This asymmetry is documented but not
-  cleaned up here; either subcommand could be aligned with the other
-  in a future ADR.
 - Bad: argparse's `-h`/`--help` text is generated from the parser and is
   not stable across Python versions; help output is documentation only,
   not contract.
