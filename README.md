@@ -206,7 +206,7 @@ $ docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/p
 usage: pygitver.py [-h] [-v] [-cv] [-nv] [-t] [-ccm CHECK_COMMIT_MESSAGE]
                    {changelog,changelogs} ...
 
-pygitver tool, ver: 0.1.2
+pygitver tool, ver: 0.2.5
 
 options:
   -h, --help            show this help message and exit
@@ -250,7 +250,7 @@ app_a_1.2.3
 $ PYGITVER_VERSION_PREFIX=app_a_ python -m pygitver.pygitver --next-ver
 app_a_1.3.0
 $ PYGITVER_VERSION_PREFIX=app_b_ python -m pygitver.pygitver --curr-ver
-app_b_2.5.3
+app_b_2.5.2
 $ PYGITVER_VERSION_PREFIX=app_b_ python -m pygitver.pygitver --next-ver
 app_b_2.6.0
 ```
