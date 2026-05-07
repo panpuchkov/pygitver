@@ -64,14 +64,14 @@ def test_check_commit_message_invalid_exits_nonzero_with_guidance(monkeypatch, c
         main()
 
     assert exc_info.value.code == 1
-    out = capsys.readouterr().out
-    assert "Conventional Commits" in out
+    captured = capsys.readouterr()
+    assert "Conventional Commits" in captured.err
+    assert "Conventional Commits" not in captured.out
 
 
 def test_cli_surfaces_git_command_failure(monkeypatch, capsys):
     # When _cmd's subprocess returns non-zero, the CLI exits with that
-    # return code and prints the git output. Pin so any reshaping of
-    # GitError preserves the user-facing behavior.
+    # return code and prints the git output to stderr.
     class FakeResult:
         returncode = 128
         stdout = b"fatal: not a git repository\n"
@@ -83,8 +83,9 @@ def test_cli_surfaces_git_command_failure(monkeypatch, capsys):
         main()
 
     assert exc_info.value.code == 128
-    out = capsys.readouterr().out
-    assert "fatal: not a git repository" in out
+    captured = capsys.readouterr()
+    assert "fatal: not a git repository" in captured.err
+    assert "fatal: not a git repository" not in captured.out
 
 
 def test_changelog_subcommand_does_not_leak_sentinel_to_git(monkeypatch, capsys):

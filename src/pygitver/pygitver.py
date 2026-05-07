@@ -135,10 +135,14 @@ def main():
             print(changelog_group["version"])
         elif args.check_commit_message:
             if not Git.check_commit_message(args.check_commit_message):
-                print("ERROR: Commit does not fit Conventional Commits requirements")
+                print(
+                    "ERROR: Commit does not fit Conventional Commits requirements",
+                    file=sys.stderr,
+                )
                 print(
                     "More about Conventional Commits: "
-                    "https://www.conventionalcommits.org/en/v1.0.0/"
+                    "https://www.conventionalcommits.org/en/v1.0.0/",
+                    file=sys.stderr,
                 )
                 exit(1)
         elif "dir" in args:
@@ -148,12 +152,12 @@ def main():
                 try:
                     print(join_changelogs.generate(template_name=args.template))
                 except ChangelogsMngrError as err:
-                    print(err)
+                    print(err, file=sys.stderr)
                     exit(1)
             elif args.format == "json":
                 print(json.dumps(output))
             else:
-                print("ERROR: unknown output format")
+                print("ERROR: unknown output format", file=sys.stderr)
                 exit(1)
         elif "format" in args:
             start = args.start
@@ -170,11 +174,11 @@ def main():
             elif args.format == "json":
                 print(json.dumps(changelog_group))
             else:
-                print("ERROR: unknown output format")
+                print("ERROR: unknown output format", file=sys.stderr)
                 exit(1)
 
     except GitError as err:
-        print(err.output)
+        print(err.output, file=sys.stderr)
         exit(err.return_code)
 
     exit(0)
