@@ -1,19 +1,18 @@
 import argparse
 
+from pygitver import __version__
 from pygitver.git import Git, GitError, CURRENT_VERSION_DEFAULT
 from pygitver.changelogs_mngr import ChangelogsMngr, ChangelogsMngrError
 import json
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description=f"pygitver tool, ver: {Git.__version__}"
-    )
+    parser = argparse.ArgumentParser(description=f"pygitver tool, ver: {__version__}")
     parser.add_argument(
         "-v",
         "--version",
         action="version",
-        version="%(prog)s " + Git.__version__,
+        version="%(prog)s " + __version__,
         help="show tool version",
     )
 

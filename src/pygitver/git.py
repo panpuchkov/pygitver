@@ -26,8 +26,6 @@ CURRENT_VERSION_DEFAULT = "v0.0.0"
 
 
 class Git:
-    __version__ = "0.2.5"
-
     @staticmethod
     def _cmd(command: str) -> str:
         """

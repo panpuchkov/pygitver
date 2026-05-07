@@ -7,6 +7,25 @@ from pygitver.git import Git
 from pygitver.pygitver import main
 
 
+def test_get_version_uses_package_metadata(monkeypatch):
+    from pygitver import _get_version
+
+    monkeypatch.setattr("pygitver._pkg_version", lambda _: "9.9.9")
+    assert _get_version() == "9.9.9"
+
+
+def test_get_version_falls_back_when_package_not_installed(monkeypatch):
+    from importlib.metadata import PackageNotFoundError
+
+    from pygitver import _get_version
+
+    def raising(_):
+        raise PackageNotFoundError
+
+    monkeypatch.setattr("pygitver._pkg_version", raising)
+    assert _get_version() == "unknown"
+
+
 def test_changelog_subcommand_does_not_leak_sentinel_to_git(monkeypatch, capsys):
     # On a tagless repo, version_current() returns the sentinel "v0.0.0".
     # The CLI must not pass that sentinel to `git log` as a real ref —
