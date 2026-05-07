@@ -206,7 +206,7 @@ $ docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/p
 usage: pygitver.py [-h] [-v] [-cv] [-nv] [-t] [-ccm CHECK_COMMIT_MESSAGE]
                    {changelog,changelogs} ...
 
-pygitver tool, ver: 0.2.5
+pygitver tool, ver: X.Y.Z
 
 options:
   -h, --help            show this help message and exit
