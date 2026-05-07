@@ -68,3 +68,14 @@ class TestChangelogsMngr(unittest.TestCase):
             chl_mngr.generate(template_name=template_name)
         self.assertEqual(f"ERROR: Template '{template_name}' was not found.",
                          str(context.exception))
+
+
+def test_read_files_warns_on_invalid_json(capsys):
+    # broken-json.json under tests/data/changelogs/ is malformed; the manager
+    # still processes the valid files but warns on stderr so a corrupted
+    # input can't be silently dropped.
+    chl_mngr = ChangelogsMngr()
+    chl_mngr.read_files("./tests/data/changelogs/", "json")
+
+    err = capsys.readouterr().err
+    assert "broken-json" in err

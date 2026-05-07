@@ -1,6 +1,7 @@
 import os
 import pathlib
 import json
+import sys
 from pygitver.git import Git, GitError
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -38,9 +39,11 @@ class ChangelogsMngr:
                         file_name = file_name[: -(len(file_ext) + 1)]
                     self._changelogs["services"][file_name] = json.load(fp)
                     self._update_bump_version_rules(file_name)
-            except json.JSONDecodeError:
-                # nothing to do, just skip invalid file
-                pass
+            except json.JSONDecodeError as err:
+                print(
+                    f"WARNING: skipping invalid JSON file {file_name!r}: {err}",
+                    file=sys.stderr,
+                )
         try:
             self._changelogs["version"] = Git.bump_version(
                 self._changelogs["version"],
