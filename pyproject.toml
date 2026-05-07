@@ -1,6 +1,6 @@
 [project]
 name = "pygitver"
-version = "0.2.5"
+dynamic = ["version"]
 authors = [
   { name="Yurii Puchkov", email="panpuchkov@gmail.com" },
 ]
@@ -30,9 +30,12 @@ requires = ["hatchling==1.26.3", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.version]
+source = "vcs"
 
+[tool.hatch.version.raw-options]
+# Strip the +gSHA local segment so dev versions are PyPI-uploadable.
+local_scheme = "no-local-version"
 
-[tool.setuptools.package-data]
-"*" = ["*"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/pygitver"]
