@@ -169,9 +169,19 @@ def test_changelog_generate(monkeypatch):
                         "Deprecations\n------------\n\n\n* Deprecated api\n\n\n\n\n" \
                         "Improved Documentation\n----------------------\n\n\n* Update doc\n\n\n\n\n" \
                         "Trivial/Internal Changes\n------------------------\n\n\n* Code refactoring\n\n"
-    changelog = Git.changelog_generate(changelog_group=Git.changelog_group(),
-                                       template_name="src/templates/no-template.tmpl")
-    assert changelog.startswith("ERROR: Template ") is True
+
+
+def test_changelog_generate_raises_on_missing_template(monkeypatch):
+    import pytest
+    from pygitver.git import ChangelogTemplateError
+
+    monkeypatch.setattr(Git, "changelog", value=lambda *args, **kwargs: GIT_LOG_OUTPUT_MOCK)
+
+    with pytest.raises(ChangelogTemplateError, match="no-template.tmpl"):
+        Git.changelog_generate(
+            changelog_group=Git.changelog_group(),
+            template_name="src/templates/no-template.tmpl",
+        )
 
 
 def test_bump_version_auto(monkeypatch):

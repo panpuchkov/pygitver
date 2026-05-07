@@ -2,7 +2,12 @@ import argparse
 import sys
 
 from pygitver import __version__
-from pygitver.git import Git, GitError, CURRENT_VERSION_DEFAULT
+from pygitver.git import (
+    CURRENT_VERSION_DEFAULT,
+    ChangelogTemplateError,
+    Git,
+    GitError,
+)
 from pygitver.changelogs_mngr import ChangelogsMngr, ChangelogsMngrError
 import json
 
@@ -170,7 +175,11 @@ def main():
                 unique=True,
             )
             if args.format == "text":
-                print(Git.changelog_generate(changelog_group))
+                try:
+                    print(Git.changelog_generate(changelog_group))
+                except ChangelogTemplateError as err:
+                    print(err, file=sys.stderr)
+                    exit(1)
             elif args.format == "json":
                 print(json.dumps(changelog_group))
             else:

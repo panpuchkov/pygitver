@@ -16,6 +16,10 @@ class GitError(Exception):
         self.output = output
 
 
+class ChangelogTemplateError(Exception):
+    """Raised when a changelog template cannot be loaded."""
+
+
 RE_CONVENTIONAL_COMMIT = (
     r"^("
     r"(?:"
@@ -269,12 +273,11 @@ class Git:
         try:
             env = Environment(loader=FileSystemLoader(os.path.dirname(template_name)))
             template = env.get_template(os.path.basename(template_name))
-            output = template.render(
+            return template.render(
                 {"version": changelog_group["version"], **changelog_group["changelog"]}
             )
         except TemplateNotFound:
-            output = f"ERROR: Template '{template_name}' was not found."
-        return output
+            raise ChangelogTemplateError(f"Template '{template_name}' was not found.")
 
     @classmethod
     def git_version(cls) -> str:
