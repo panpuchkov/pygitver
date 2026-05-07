@@ -331,10 +331,16 @@ class Git:
             to the oldest (left to right) version rule with 'True'
         :return: string with the bumped current version
         """
+        if version != "" and not cls.version_validate(version):
+            raise ValueError(f"invalid version: {version!r}")
+
         version_prefix = cls._version_prefix(version)
         version = version.removeprefix(version_prefix)
 
-        version_items = version.split(".") if version != "" else ["0", "0", "0"]
+        # Drop any SemVer-style pre-release suffix; bumping always returns
+        # a clean release version (matches how minor/major already behaved).
+        version_core = version.split("-", 1)[0]
+        version_items = version_core.split(".") if version_core else ["0", "0", "0"]
         if bump_rules["major"] is True:
             version_items[0] = str(int(version_items[0]) + 1)
             version_items[1] = "0"

@@ -215,6 +215,22 @@ def test_bump_current_version_auto(monkeypatch):
     assert "1.2.1" == ver
 
 
+def test_bump_version_drops_prerelease_suffix_on_patch():
+    # `v1.2.3-rc1` previously crashed on patch bump (`int("3-rc1")` ValueError).
+    # Drop the pre-release suffix on bump, matching how minor/major already behave.
+    ver = Git.bump_version("v1.2.3-rc1", {"major": False, "minor": False, "patch": True})
+    assert ver == "v1.2.4"
+
+
+def test_bump_version_rejects_invalid_input():
+    # Partial version `v1.2` previously raised IndexError; reject with a clear
+    # ValueError instead. Empty string remains an accepted shorthand for 0.0.0.
+    import pytest
+
+    with pytest.raises(ValueError, match="invalid version"):
+        Git.bump_version("v1.2", {"major": False, "minor": False, "patch": True})
+
+
 def test_version_prefix(monkeypatch):
     assert "" == Git._version_prefix("1.2.3")
     assert "v" == Git._version_prefix("v1.2.3")
