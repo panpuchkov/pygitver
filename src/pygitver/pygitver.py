@@ -1,19 +1,18 @@
 import argparse
 
+from pygitver import __version__
 from pygitver.git import Git, GitError, CURRENT_VERSION_DEFAULT
 from pygitver.changelogs_mngr import ChangelogsMngr, ChangelogsMngrError
 import json
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description=f"pygitver tool, ver: {Git.__version__}"
-    )
+    parser = argparse.ArgumentParser(description=f"pygitver tool, ver: {__version__}")
     parser.add_argument(
         "-v",
         "--version",
         action="version",
-        version="%(prog)s " + Git.__version__,
+        version="%(prog)s " + __version__,
         help="show tool version",
     )
 
@@ -128,8 +127,12 @@ def main():
                 print("ERROR: unknown output format")
                 exit(1)
         elif "format" in args:
+            start = args.start
+            if not start:
+                curr_ver = Git.version_current()
+                start = "" if curr_ver == CURRENT_VERSION_DEFAULT else curr_ver
             changelog_group = Git.changelog_group(
-                start=args.start if args.start else Git.version_current(),
+                start=start,
                 end=args.end,
                 unique=True,
             )

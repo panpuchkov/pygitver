@@ -1,5 +1,7 @@
 name: Build & Push
-permissions: write-all
+
+permissions:
+  contents: read
 
 on:
   push:
@@ -9,6 +11,8 @@ on:
       - feature/*
       - fix/*
       - bugfix/*
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - main
@@ -23,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -38,15 +42,14 @@ jobs:
         run: |
           set -x
           pip install -U tox
-          pip install tox
           tox
 
   build:
     runs-on: ubuntu-latest
     needs: unittests
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -60,13 +63,16 @@ jobs:
         shell: bash
         run: |
           set -x
-          PACKAGE_VERSION="$(git tag --contains)"
-          if [[ "${PACKAGE_VERSION}" == "" ]]; then
-            PACKAGE_VERSION="$(docker run --rm -v $(pwd):/app -w /app --user "$(id -u):$(id -g)" panpuchkov/pygitver --next-ver)-dev"
-            PACKAGE_VERSION=$(echo "${PACKAGE_VERSION}" | sed 's/^v*//' )
-            DOCKER_TAG_LATEST="${PACKAGE_VERSION}"
-          else
+          HEAD_TAG=$(git tag --points-at HEAD --list 'v*' | head -n 1)
+          if [[ -n "${HEAD_TAG}" ]]; then
+            PACKAGE_VERSION="${HEAD_TAG#v}"
             DOCKER_TAG_LATEST="latest"
+          else
+            LATEST_TAG=$(git describe --tags --abbrev=0 --match 'v*')
+            COMMITS_SINCE=$(git rev-list "${LATEST_TAG}..HEAD" --count)
+            IFS='.' read -r MAJ MIN PAT <<< "${LATEST_TAG#v}"
+            PACKAGE_VERSION="${MAJ}.${MIN}.$((PAT + 1)).dev${COMMITS_SINCE}"
+            DOCKER_TAG_LATEST="${PACKAGE_VERSION}"
           fi
 
           # Generate Docker tags
@@ -95,6 +101,7 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 ${DOCKER_TAGS} --push .
 
       - name: Pip Build & Push
+        if: startsWith(github.ref, 'refs/tags/v')
         shell: bash
         run: |
           set -x

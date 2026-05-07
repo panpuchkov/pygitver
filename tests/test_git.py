@@ -376,8 +376,11 @@ def test_changelog_group_bump_version():
     res = Git._changelog_group_sort(git_log="breaking change: api", commit_wo_prefix=False, unique=True)
     assert res["bump_rules"]["major"]
 
+    # Per Conventional Commits 1.0, a deprecation announcement is not itself
+    # a breaking change. Removal of a deprecated API is, but that comes via
+    # `!` or a `BREAKING CHANGE:` footer.
     res = Git._changelog_group_sort(git_log="deprecated: api", commit_wo_prefix=False, unique=True)
-    assert res["bump_rules"]["major"]
+    assert not res["bump_rules"]["major"]
 
     res = Git._changelog_group_sort(git_log="fix: api, breaking change: remove api endpoint", commit_wo_prefix=False,
                                     unique=True)
@@ -389,17 +392,23 @@ def test_changelog_group_bump_version():
     assert expected_bump_rules == res["bump_rules"]
 
 
-def test_changelog_without_current_version(monkeypatch):
+def test_changelog_without_start_does_not_use_range(monkeypatch):
+    # With no start ref, the git log command must not be constrained by a
+    # range. A range like `firstsha...HEAD` excludes the first commit, which
+    # silently truncates the changelog of a tagless repo.
+    captured = []
+
     def fake_cmd(command: str):
-        if "git log --pretty=format:%H --reverse -n 1" in command:
-            return "firstsha"
-        elif "git log --pretty=format:%s" in command:
+        captured.append(command)
+        if "git log --pretty=format:%s" in command:
             return "fix: patch 1\nfeat: new feature"
         return ""
 
     monkeypatch.setattr(Git, "_cmd", value=fake_cmd)
-    monkeypatch.setattr(Git, "version_current", value=lambda: "")
 
     result = Git.changelog()
+
+    log_cmd = next(c for c in captured if "git log --pretty=format:%s" in c)
+    assert "..." not in log_cmd, f"unexpected range in git log command: {log_cmd}"
     assert "patch 1" in result
     assert "new feature" in result

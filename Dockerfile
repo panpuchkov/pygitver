@@ -7,7 +7,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 WORKDIR /build-pkg
 
-# Install pip requirements
+# Build the sdist and install it into the venv.
 COPY . /build-pkg
 
 RUN apk add --no-cache git  \
@@ -33,5 +33,9 @@ WORKDIR /app
 
 # Make sure we use the virtualenv:
 ENV PATH="/opt/venv/bin:$PATH"
+
+# Drop privileges. Host users can still override with `docker run --user`
+# to match their own UID/GID for files written via mounted volumes.
+USER 1000:1000
 
 ENTRYPOINT ["pygitver"]
