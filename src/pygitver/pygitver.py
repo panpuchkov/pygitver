@@ -105,6 +105,22 @@ def main():
 
     args = parser.parse_args()
 
+    actions = []
+    if args.tags:
+        actions.append("--tags")
+    if args.curr_ver:
+        actions.append("--curr-ver")
+    if args.next_ver:
+        actions.append("--next-ver")
+    if args.check_commit_message:
+        actions.append("--check-commit-message")
+    if "dir" in args:
+        actions.append("changelogs")
+    elif "format" in args:
+        actions.append("changelog")
+    if len(actions) > 1:
+        parser.error(f"only one action may be specified, got: {', '.join(actions)}")
+
     try:
         if args.tags:
             for tag in Git.tags():

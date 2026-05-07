@@ -37,6 +37,17 @@ def test_main_with_no_args_prints_help_and_exits_nonzero(monkeypatch, capsys):
     assert "usage:" in (captured.out + captured.err).lower()
 
 
+def test_main_rejects_multiple_actions(monkeypatch, capsys):
+    monkeypatch.setattr(sys, "argv", ["pygitver", "-cv", "-nv"])
+
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+
+    assert exc_info.value.code != 0
+    err = capsys.readouterr().err
+    assert "only one" in err.lower()
+
+
 def test_changelog_subcommand_does_not_leak_sentinel_to_git(monkeypatch, capsys):
     # On a tagless repo, version_current() returns the sentinel "v0.0.0".
     # The CLI must not pass that sentinel to `git log` as a real ref —
