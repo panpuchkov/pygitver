@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from pygitver import __version__
 from pygitver.git import Git, GitError, CURRENT_VERSION_DEFAULT
@@ -97,6 +98,10 @@ def main():
         help="Template for the CHANGELOG in Jinja2 format",
     )
     # Changelogs ^^^
+
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
 
     args = parser.parse_args()
 
