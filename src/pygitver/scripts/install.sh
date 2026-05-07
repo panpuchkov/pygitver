@@ -13,9 +13,11 @@ if [ ! -d ".git" ]; then
 fi
 
 if [ ! -e "${GIT_HOOK_COMMIT_MSG_FILE_DST}" ]; then
-  cp "${GIT_HOOK_COMMIT_MSG_FILE_SRC}" "${GIT_HOOK_COMMIT_MSG_FILE_DST}"
+  PYGITVER_VERSION=$(pygitver --version | awk '{print $2}')
+  sed "s|^COMMIT_LINT_DOCKER=\"panpuchkov/pygitver\"$|COMMIT_LINT_DOCKER=\"panpuchkov/pygitver:${PYGITVER_VERSION}\"|" \
+      "${GIT_HOOK_COMMIT_MSG_FILE_SRC}" > "${GIT_HOOK_COMMIT_MSG_FILE_DST}"
   chmod +x "${GIT_HOOK_COMMIT_MSG_FILE_DST}"
-  echo "Done."
+  echo "Done. Hook pinned to panpuchkov/pygitver:${PYGITVER_VERSION}"
 else
   echo "Git hook commit-msg already exists; please check if it is correct."
 fi
