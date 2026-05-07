@@ -35,6 +35,16 @@ RE_CONVENTIONAL_COMMIT = (
 CURRENT_VERSION_DEFAULT = "v0.0.0"
 
 
+def capfirst(value: str) -> str:
+    """Uppercase only the first character; leave the rest untouched.
+
+    Jinja2's built-in ``capitalize`` also lowercases the remainder,
+    which mangles acronyms (``OAuth`` -> ``oauth``) the developer
+    cased intentionally in commit messages.
+    """
+    return value[:1].upper() + value[1:]
+
+
 class Git:
     @staticmethod
     def _cmd(*args: str) -> str:
@@ -272,6 +282,7 @@ class Git:
             )
         try:
             env = Environment(loader=FileSystemLoader(os.path.dirname(template_name)))
+            env.filters["capfirst"] = capfirst
             template = env.get_template(os.path.basename(template_name))
             return template.render(
                 {"version": changelog_group["version"], **changelog_group["changelog"]}

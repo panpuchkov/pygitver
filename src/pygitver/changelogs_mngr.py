@@ -2,7 +2,7 @@ import os
 import pathlib
 import json
 import sys
-from pygitver.git import Git, GitError
+from pygitver.git import Git, GitError, capfirst
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
@@ -62,6 +62,7 @@ class ChangelogsMngr:
             )
         try:
             env = Environment(loader=FileSystemLoader(os.path.dirname(template_name)))
+            env.filters["capfirst"] = capfirst
             template = env.get_template(os.path.basename(template_name))
             output = template.render(**self._changelogs)
         except TemplateNotFound:

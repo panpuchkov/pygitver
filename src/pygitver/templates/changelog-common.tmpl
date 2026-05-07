@@ -10,7 +10,7 @@
 
 {% for key, value in services.items() %}
 
-### {{ key | capitalize }}
+### {{ key | capfirst }}
 
 Version: {{ value.version }}
 
@@ -18,7 +18,7 @@ Version: {{ value.version }}
 #### Features
 
 {% for item in value.changelog.features %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}
 
@@ -27,7 +27,7 @@ Version: {{ value.version }}
 #### Bug Fixes
 
 {% for item in value.changelog.bugfixes %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}
 
@@ -36,7 +36,7 @@ Version: {{ value.version }}
 #### Deprecations
 
 {% for item in value.changelog.deprecations %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}
 
@@ -44,7 +44,7 @@ Version: {{ value.version }}
 #### Improved Documentation
 
 {% for item in value.changelog.docs %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}
 
@@ -52,7 +52,7 @@ Version: {{ value.version }}
 #### Trivial/Internal Changes
 
 {% for item in value.changelog.others %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}
 

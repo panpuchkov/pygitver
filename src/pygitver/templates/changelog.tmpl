@@ -13,7 +13,7 @@ Features
 --------
 
 {% for item in features %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}
 
@@ -23,7 +23,7 @@ Bug Fixes
 ---------
 
 {% for item in bugfixes %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}
 
@@ -33,7 +33,7 @@ Deprecations
 ------------
 
 {% for item in deprecations %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}
 
@@ -42,7 +42,7 @@ Improved Documentation
 ----------------------
 
 {% for item in docs %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}
 
@@ -51,6 +51,6 @@ Trivial/Internal Changes
 ------------------------
 
 {% for item in others %}
-* {{ item | capitalize }}
+* {{ item | capfirst }}
 {% endfor %}
 {% endif %}

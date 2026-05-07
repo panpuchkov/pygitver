@@ -171,6 +171,21 @@ def test_changelog_generate(monkeypatch):
                         "Trivial/Internal Changes\n------------------------\n\n\n* Code refactoring\n\n"
 
 
+def test_changelog_generate_preserves_acronym_casing(monkeypatch):
+    # The bullet-rendering filter must only uppercase the first character.
+    # Jinja2's built-in `| capitalize` also lowercases the rest, mangling
+    # acronyms (OAuth -> oauth, JWT -> jwt) the developer cased intentionally.
+    monkeypatch.setattr(
+        Git, "changelog",
+        value=lambda *args, **kwargs: "fix: support OAuth + JWT",
+    )
+
+    out = Git.changelog_generate(changelog_group=Git.changelog_group())
+
+    assert "OAuth" in out
+    assert "JWT" in out
+
+
 def test_changelog_generate_raises_on_missing_template(monkeypatch):
     import pytest
     from pygitver.git import ChangelogTemplateError
