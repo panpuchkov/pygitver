@@ -48,6 +48,45 @@ def test_main_rejects_multiple_actions(monkeypatch, capsys):
     assert "only one" in err.lower()
 
 
+def test_check_commit_message_valid_exits_zero(monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["pygitver", "-ccm", "feat: new thing"])
+
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+
+    assert exc_info.value.code == 0
+
+
+def test_check_commit_message_invalid_exits_nonzero_with_guidance(monkeypatch, capsys):
+    monkeypatch.setattr(sys, "argv", ["pygitver", "-ccm", "not conventional"])
+
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+
+    assert exc_info.value.code == 1
+    out = capsys.readouterr().out
+    assert "Conventional Commits" in out
+
+
+def test_cli_surfaces_git_command_failure(monkeypatch, capsys):
+    # When _cmd's subprocess returns non-zero, the CLI exits with that
+    # return code and prints the git output. Pin so any reshaping of
+    # GitError preserves the user-facing behavior.
+    class FakeResult:
+        returncode = 128
+        stdout = b"fatal: not a git repository\n"
+
+    monkeypatch.setattr("pygitver.git.subprocess.run", lambda *a, **kw: FakeResult())
+    monkeypatch.setattr(sys, "argv", ["pygitver", "-t"])
+
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+
+    assert exc_info.value.code == 128
+    out = capsys.readouterr().out
+    assert "fatal: not a git repository" in out
+
+
 def test_changelog_subcommand_does_not_leak_sentinel_to_git(monkeypatch, capsys):
     # On a tagless repo, version_current() returns the sentinel "v0.0.0".
     # The CLI must not pass that sentinel to `git log` as a real ref —
@@ -56,9 +95,9 @@ def test_changelog_subcommand_does_not_leak_sentinel_to_git(monkeypatch, capsys)
 
     captured = []
 
-    def fake_cmd(command: str) -> str:
-        captured.append(command)
-        if "git log --pretty=format:%s" in command:
+    def fake_cmd(*args: str) -> str:
+        captured.append(list(args))
+        if args[:3] == ("git", "log", "--pretty=format:%s"):
             return "fix: a fix\nfeat: a feature"
         return ""
 
@@ -69,8 +108,10 @@ def test_changelog_subcommand_does_not_leak_sentinel_to_git(monkeypatch, capsys)
         main()
     assert exc_info.value.code == 0
 
-    log_cmd = next(c for c in captured if "git log --pretty=format:%s" in c)
-    assert "v0.0.0..." not in log_cmd, f"sentinel leaked into git command: {log_cmd}"
+    log_argv = next(c for c in captured if c[:3] == ["git", "log", "--pretty=format:%s"])
+    assert not any(part.startswith("v0.0.0...") for part in log_argv), (
+        f"sentinel leaked into git argv: {log_argv}"
+    )
 
     out = capsys.readouterr().out
     payload = json.loads(out.strip())

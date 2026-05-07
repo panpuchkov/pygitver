@@ -133,6 +133,14 @@ def main():
                 curr_ver = ""
             changelog_group = Git.changelog_group(start=curr_ver)
             print(changelog_group["version"])
+        elif args.check_commit_message:
+            if not Git.check_commit_message(args.check_commit_message):
+                print("ERROR: Commit does not fit Conventional Commits requirements")
+                print(
+                    "More about Conventional Commits: "
+                    "https://www.conventionalcommits.org/en/v1.0.0/"
+                )
+                exit(1)
         elif "dir" in args:
             join_changelogs = ChangelogsMngr(changelogs_version=args.changelogs_version)
             output = join_changelogs.read_files(path=args.dir, file_ext="json")
@@ -166,19 +174,9 @@ def main():
                 exit(1)
 
     except GitError as err:
-        git_error = json.loads(str(err))
-        print(git_error["result"])
-        exit(git_error["return_code"])
+        print(err.output)
+        exit(err.return_code)
 
-    if args.check_commit_message:
-        res = Git.check_commit_message(args.check_commit_message)
-        if not res:
-            print("ERROR: Commit does not fit Conventional Commits requirements")
-            print(
-                "More about Conventional Commits: "
-                "https://www.conventionalcommits.org/en/v1.0.0/"
-            )
-            exit(1)
     exit(0)
 
 

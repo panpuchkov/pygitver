@@ -408,15 +408,34 @@ def test_changelog_group_bump_version():
     assert expected_bump_rules == res["bump_rules"]
 
 
+def test_cmd_passes_argv_directly_to_subprocess(monkeypatch):
+    # _cmd takes argv as varargs and forwards the list to subprocess unchanged,
+    # so a single argument containing spaces is preserved instead of being split.
+    captured = {}
+
+    class FakeResult:
+        returncode = 0
+        stdout = b"ok"
+
+    def fake_run(args, **kwargs):
+        captured["args"] = args
+        return FakeResult()
+
+    monkeypatch.setattr("pygitver.git.subprocess.run", fake_run)
+
+    Git._cmd("git", "log", "--pretty=format:%s", "--no-merges")
+    assert captured["args"] == ["git", "log", "--pretty=format:%s", "--no-merges"]
+
+
 def test_changelog_without_start_does_not_use_range(monkeypatch):
     # With no start ref, the git log command must not be constrained by a
     # range. A range like `firstsha...HEAD` excludes the first commit, which
     # silently truncates the changelog of a tagless repo.
     captured = []
 
-    def fake_cmd(command: str):
-        captured.append(command)
-        if "git log --pretty=format:%s" in command:
+    def fake_cmd(*args: str) -> str:
+        captured.append(list(args))
+        if args[:3] == ("git", "log", "--pretty=format:%s"):
             return "fix: patch 1\nfeat: new feature"
         return ""
 
@@ -424,7 +443,9 @@ def test_changelog_without_start_does_not_use_range(monkeypatch):
 
     result = Git.changelog()
 
-    log_cmd = next(c for c in captured if "git log --pretty=format:%s" in c)
-    assert "..." not in log_cmd, f"unexpected range in git log command: {log_cmd}"
+    log_argv = next(c for c in captured if c[:3] == ["git", "log", "--pretty=format:%s"])
+    assert not any("..." in part for part in log_argv), (
+        f"unexpected range in git log argv: {log_argv}"
+    )
     assert "patch 1" in result
     assert "new feature" in result

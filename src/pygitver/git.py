@@ -1,13 +1,19 @@
 import os
 import pathlib
-import json
 import re
 import subprocess
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 
 class GitError(Exception):
-    pass
+    """Raised when a git subprocess exits non-zero. Carries the exit
+    code and captured output so callers can act on them without
+    parsing the message string."""
+
+    def __init__(self, return_code: int, output: str):
+        super().__init__(f"git failed with exit code {return_code}: {output}")
+        self.return_code = return_code
+        self.output = output
 
 
 RE_CONVENTIONAL_COMMIT = (
@@ -27,23 +33,24 @@ CURRENT_VERSION_DEFAULT = "v0.0.0"
 
 class Git:
     @staticmethod
-    def _cmd(command: str) -> str:
+    def _cmd(*args: str) -> str:
         """
-        Run a shell command, used for running git commands.
+        Run a subprocess command and return its stdout.
 
-        :param command: string with shell command
+        Each positional argument is one argv element; nothing is
+        re-split, so values containing spaces (paths, refspecs)
+        round-trip correctly.
+
         :return: string with the raw output of the shell stdout
         """
         subprocess_res = subprocess.run(
-            list(filter(lambda x: x, command.split(" "))),
+            list(args),
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
         output = subprocess_res.stdout.decode("utf-8")
         if 0 != subprocess_res.returncode:
-            raise GitError(
-                json.dumps({"return_code": subprocess_res.returncode, "result": output})
-            )  # pragma: no cover
+            raise GitError(subprocess_res.returncode, output)
         return output
 
     @classmethod
@@ -173,11 +180,11 @@ class Git:
         :return: string with git tags
         """
         if update_from_remote:  # pragma: no cover
-            cls._cmd("git fetch --all --tags")
+            cls._cmd("git", "fetch", "--all", "--tags")
         res = list(
             filter(
                 None,
-                cls._cmd("git tag -l --sort=-v:refname").split("\n"),
+                cls._cmd("git", "tag", "-l", "--sort=-v:refname").split("\n"),
             )
         )
         return res
@@ -207,8 +214,11 @@ class Git:
         :param end: ending ref; defaults to HEAD.
         :return: newline-joined commit subjects.
         """
-        git_commits_range = f"{start}...{end} " if start else ""
-        return cls._cmd(f"git log --pretty=format:%s {git_commits_range}--no-merges")
+        argv = ["git", "log", "--pretty=format:%s"]
+        if start:
+            argv.append(f"{start}...{end}")
+        argv.append("--no-merges")
+        return cls._cmd(*argv)
 
     @classmethod
     def changelog_group(
@@ -273,7 +283,7 @@ class Git:
 
         :return: string with git version
         """
-        res = cls._cmd("git --version")
+        res = cls._cmd("git", "--version")
         res = res.replace("\n", "").split(" ")[-1]
         return res
 
