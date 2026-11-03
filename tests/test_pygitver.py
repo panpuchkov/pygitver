@@ -26,6 +26,64 @@ def test_get_version_falls_back_when_package_not_installed(monkeypatch):
     assert _get_version() == "unknown"
 
 
+def run_cli(monkeypatch, capsys, *args):
+    monkeypatch.setattr(sys, "argv", ["pygitver", *args])
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+    assert exc_info.value.code == 0
+    return capsys.readouterr().out.strip()
+
+
+def test_next_ver_on_a_commit_behind_the_current_tag_is_the_current_version(git_repo, monkeypatch, capsys):
+    git_repo.commit("feat: a")
+    git_repo.tag("v0.1.0")
+    older = git_repo.commit("fix: b")
+    git_repo.commit("feat: c")
+    git_repo.tag("v0.2.0")
+    git_repo.checkout(older)
+
+    assert run_cli(monkeypatch, capsys, "--curr-ver") == "v0.2.0"
+    assert run_cli(monkeypatch, capsys, "--next-ver") == "v0.2.0"
+
+
+def test_next_ver_with_a_prefix_on_a_commit_behind_the_current_tag_is_the_current_version(
+    git_repo, monkeypatch, capsys
+):
+    git_repo.commit("feat: a")
+    git_repo.tag("app_a_0.1.0")
+    older = git_repo.commit("fix: b")
+    git_repo.commit("feat: c")
+    git_repo.tag("app_a_0.2.0")
+    git_repo.tag("app_b_1.0.0")
+    git_repo.checkout(older)
+    monkeypatch.setenv("PYGITVER_VERSION_PREFIX", "app_a_")
+
+    assert run_cli(monkeypatch, capsys, "--curr-ver") == "app_a_0.2.0"
+    assert run_cli(monkeypatch, capsys, "--next-ver") == "app_a_0.2.0"
+
+
+def test_next_ver_bumps_by_commits_on_top_of_the_current_tag(git_repo, monkeypatch, capsys):
+    git_repo.commit("feat: a")
+    git_repo.tag("v0.2.0")
+    git_repo.commit("fix: x")
+
+    assert run_cli(monkeypatch, capsys, "--next-ver") == "v0.2.1"
+
+
+def test_next_ver_on_a_branch_bumps_only_by_its_own_commits(git_repo, monkeypatch, capsys):
+    # The current tag sits on another branch (ADR-0002): its commits must not bump this one.
+    base = git_repo.commit("feat: a")
+    git_repo.tag("v0.1.0")
+    git_repo.git("checkout", "--quiet", "-b", "release")
+    git_repo.commit("feat: r")
+    git_repo.tag("v0.2.0")
+    git_repo.git("checkout", "--quiet", "-b", "feature", base)
+    git_repo.commit("fix: f")
+
+    assert run_cli(monkeypatch, capsys, "--curr-ver") == "v0.2.0"
+    assert run_cli(monkeypatch, capsys, "--next-ver") == "v0.2.1"
+
+
 def test_main_with_no_args_prints_help_and_exits_nonzero(monkeypatch, capsys):
     monkeypatch.setattr(sys, "argv", ["pygitver"])
 
