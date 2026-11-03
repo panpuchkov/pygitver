@@ -220,17 +220,21 @@ class Git:
         """
         Get a raw change log from `start` to `end`, merges excluded.
 
-        With no `start`, the log spans full history rather than being
-        constrained to a range — a range like `firstsha...HEAD` would
-        exclude the first commit.
+        The range holds the commits reachable from `end` but not from
+        `start`. A commit behind `start` (e.g. an older commit checked
+        out after a newer release tag) therefore gets an empty log and
+        no version bump. With no `start`, the log spans full history
+        rather than being constrained to a range — a range like
+        `firstsha..HEAD` would exclude the first commit.
 
-        :param start: starting ref (tag/sha); empty means "from beginning".
+        :param start: starting ref (tag/sha); empty means "from
+            beginning".
         :param end: ending ref; defaults to HEAD.
         :return: newline-joined commit subjects.
         """
         argv = ["git", "log", "--pretty=format:%s"]
         if start:
-            argv.append(f"{start}...{end}")
+            argv.append(f"{start}..{end}")
         argv.append("--no-merges")
         return cls._cmd(*argv)
 

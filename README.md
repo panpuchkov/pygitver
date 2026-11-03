@@ -90,6 +90,11 @@ $ pygitver --next-ver
 v0.0.3
 ```
 
+`--next-ver` bumps the current version by the commits HEAD has and that tag lacks. On a commit
+behind the current tag (an older commit), it prints the current version unchanged, so a CI job
+comparing `--curr-ver` and `--next-ver` creates no tag there
+([ADR-0009](docs/adr/0009-next-version-counts-only-head-side-commits.md)).
+
 #### Generate changelog
 ```shell
 $ pygitver changelog

@@ -452,9 +452,20 @@ def test_cmd_passes_argv_directly_to_subprocess(monkeypatch):
     assert captured["args"] == ["git", "log", "--pretty=format:%s", "--no-merges"]
 
 
+def test_changelog_lists_only_commits_the_end_has_and_the_start_lacks(git_repo):
+    git_repo.commit("feat: a")
+    git_repo.tag("v0.1.0")
+    older = git_repo.commit("fix: b")
+    git_repo.commit("feat: c")
+    git_repo.tag("v0.2.0")
+
+    assert Git.changelog(start="v0.1.0", end="v0.2.0") == "feat: c\nfix: b"
+    assert Git.changelog(start="v0.2.0", end=older) == ""
+
+
 def test_changelog_without_start_does_not_use_range(monkeypatch):
     # With no start ref, the git log command must not be constrained by a
-    # range. A range like `firstsha...HEAD` excludes the first commit, which
+    # range. A range like `firstsha..HEAD` excludes the first commit, which
     # silently truncates the changelog of a tagless repo.
     captured = []
 
@@ -469,7 +480,7 @@ def test_changelog_without_start_does_not_use_range(monkeypatch):
     result = Git.changelog()
 
     log_argv = next(c for c in captured if c[:3] == ["git", "log", "--pretty=format:%s"])
-    assert not any("..." in part for part in log_argv), (
+    assert not any(".." in part for part in log_argv), (
         f"unexpected range in git log argv: {log_argv}"
     )
     assert "patch 1" in result
